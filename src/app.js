@@ -7,7 +7,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const repositories = [];
+const repositories = [
+	{
+		id: '2',
+		title: 'Desafio Node.js',
+		url: 'https://github.com/arthur-meireles',
+		techs: ['Node.js', 'Javascript', 'React'],
+		likes: 0,
+	},
+];
 
 app.get('/repositories', (request, response) => {
 	response.send(repositories);
@@ -58,11 +66,30 @@ app.delete('/repositories/:id', (request, response) => {
 	}
 
 	repositories.splice(repositorieIndex, 1);
-	response.send({message: 'Sucessful deleted'});
+	response.send({ message: 'Sucessful deleted' });
 });
 
 app.post('/repositories/:id/like', (request, response) => {
-	// TODO
+	const { id } = request.params;
+
+	const repositorieIndex = repositories.findIndex(
+		repositorie => repositorie.id === id,
+	);
+	if (repositorieIndex < 0) {
+		return response.status(404).json({ error: 'Repositorie id not found' });
+	}
+
+	let repositorie = repositories[repositorieIndex];
+	let { title, url, techs, likes } = repositorie;
+	repositories[repositorieIndex] = {
+    id,
+		title,
+		url,
+		techs,
+		likes: ++likes,
+	};
+
+	response.send(repositories[repositorieIndex]);
 });
 
 module.exports = app;
