@@ -27,25 +27,38 @@ app.post('/repositories', (request, response) => {
 });
 
 app.put('/repositories/:id', (request, response) => {
-  const { id } = request.params;
+	const { id } = request.params;
 	const { title, url, techs } = request.body;
 
-  const repositorieIndex = repositories.findIndex(repositorie => repositorie.id === id);
-  if (repositorieIndex < 0) {
+	const repositorieIndex = repositories.findIndex(
+		repositorie => repositorie.id === id,
+	);
+	if (repositorieIndex < 0) {
 		return response.status(404).json({ error: 'Repositorie id not found' });
 	}
-  const repositorie = {
-      id,
-      title,
-      url,
-      techs,
-  }
-  repositories[repositorieIndex] = repositorie;
-  response.send(repositorie)
+	const repositorie = {
+		id,
+		title,
+		url,
+		techs,
+	};
+	repositories[repositorieIndex] = repositorie;
+	response.send(repositorie);
 });
 
 app.delete('/repositories/:id', (request, response) => {
-	// TODO
+	const { id } = request.params;
+	const { title, url, techs } = request.body;
+
+	const repositorieIndex = repositories.findIndex(
+		repositorie => repositorie.id === id,
+	);
+	if (repositorieIndex < 0) {
+		return response.status(404).json({ error: 'Repositorie id not found' });
+	}
+
+	repositories.splice(repositorieIndex, 1);
+	response.send({message: 'Sucessful deleted'});
 });
 
 app.post('/repositories/:id/like', (request, response) => {
