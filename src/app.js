@@ -7,18 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const repositories = [
-	{
-		id: '2',
-		title: 'Desafio Node.js',
-		url: 'https://github.com/arthur-meireles',
-		techs: ['Node.js', 'Javascript', 'React'],
-		likes: 0,
-	},
-];
+const repositories = [];
 
 app.get('/repositories', (request, response) => {
-	response.send(repositories);
+	response.json(repositories);
 });
 
 app.post('/repositories', (request, response) => {
@@ -42,13 +34,14 @@ app.put('/repositories/:id', (request, response) => {
 		repositorie => repositorie.id === id,
 	);
 	if (repositorieIndex < 0) {
-		return response.status(404).json({ error: 'Repositorie id not found' });
+		return response.status(400).json({ error: 'Repositorie id not found' });
 	}
 	const repositorie = {
 		id,
 		title,
 		url,
 		techs,
+		likes: repositories[repositorieIndex].likes,
 	};
 	repositories[repositorieIndex] = repositorie;
 	response.send(repositorie);
@@ -56,17 +49,16 @@ app.put('/repositories/:id', (request, response) => {
 
 app.delete('/repositories/:id', (request, response) => {
 	const { id } = request.params;
-	const { title, url, techs } = request.body;
 
 	const repositorieIndex = repositories.findIndex(
 		repositorie => repositorie.id === id,
 	);
 	if (repositorieIndex < 0) {
-		return response.status(404).json({ error: 'Repositorie id not found' });
+		return response.status(400).json({ error: 'Repositorie id not found' });
 	}
 
 	repositories.splice(repositorieIndex, 1);
-	response.send({ message: 'Sucessful deleted' });
+	response.status(204).json({ message: 'Sucessful deleted' });
 });
 
 app.post('/repositories/:id/like', (request, response) => {
@@ -76,18 +68,9 @@ app.post('/repositories/:id/like', (request, response) => {
 		repositorie => repositorie.id === id,
 	);
 	if (repositorieIndex < 0) {
-		return response.status(404).json({ error: 'Repositorie id not found' });
+		return response.status(400).json({ error: 'Repositorie id not found' });
 	}
-
-	let repositorie = repositories[repositorieIndex];
-	let { title, url, techs, likes } = repositorie;
-	repositories[repositorieIndex] = {
-    id,
-		title,
-		url,
-		techs,
-		likes: ++likes,
-	};
+	repositories[repositorieIndex].likes++;
 
 	response.send(repositories[repositorieIndex]);
 });
